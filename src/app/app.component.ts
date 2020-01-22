@@ -28,6 +28,9 @@ export class AppComponent {
     });
   }
 
+  /*
+  * Create Navigation array
+  */
   sideMenu()
   {
     this.navigate =
@@ -46,4 +49,5 @@ export class AppComponent {
       },
     ]
   }
+
 }
