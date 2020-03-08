@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service'
 import { User } from '../user/user';
 import { Storage } from '@ionic/storage';
@@ -9,7 +9,7 @@ import { AlertController } from '@ionic/angular';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   new_id : number
 
   constructor(
@@ -17,6 +17,10 @@ export class HomePage {
     private storage: Storage,
     public alertController: AlertController
   ) {
+    
+  }
+
+  ngOnInit() {
     if(!this.get_user()){
       this.presentPrompt()
     }
@@ -40,7 +44,7 @@ export class HomePage {
   }
 
   get() {
-    console.log(this.userService.get_curr_user())
+    console.log(this.userService.get_users())
   }
 
   private get_last_id() {
