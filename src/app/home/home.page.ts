@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service'
 import { User } from '../user/user';
+import { Task } from '../task/task';
 import { Storage } from '@ionic/storage';
 import { AlertController } from '@ionic/angular';
+import { TaskService } from '../task.service';
 
 @Component({
   selector: 'app-home',
@@ -11,23 +13,41 @@ import { AlertController } from '@ionic/angular';
 })
 export class HomePage implements OnInit {
   new_id : number
+  new_task_id : number
+  tasks : Array<Task> = []
+  id : number
+  user : User
 
   constructor(
     private userService: UserService,
     private storage: Storage,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private taskService: TaskService
   ) {
-    
+
   }
 
   ngOnInit() {
-    if(!this.get_user()){
+    if(!this.userService.get_curr_user()){
       this.presentPrompt()
+    } else {
+      this.get_tasks()
     }
   }
 
-  private get_user() {
-    return this.userService.get_curr_user()
+  private async get_user() {
+    await this.userService.get_curr_user().then(val => {
+      this.user = val
+    })
+    console.log(this.user)
+    return this.user
+  }
+
+  private async get_user_id() {
+    await this.userService.get_curr_user_id().then(val => {
+      this.id = val
+      console.log(this.id)
+    })
   }
 
   /**
@@ -49,6 +69,10 @@ export class HomePage implements OnInit {
 
   private get_last_id() {
     this.new_id = this.userService.get_last_id() + 1
+  }
+
+  private get_last_task_id() {
+    this.new_task_id = this.taskService.get_last_id() + 1
   }
   
   async presentPrompt() {
@@ -74,5 +98,24 @@ export class HomePage implements OnInit {
       ]
     });
     alert.present();
+  }
+
+  get_tasks() {
+    console.log(this.taskService.get_tasks())
+    this.taskService.get_tasks().then(val => {
+      this.tasks = val
+    })
+  }
+
+  async add_task() {
+    this.get_last_task_id()
+    await this.get_user_id()
+    let new_task = new Task()
+    new_task.title = 'Test task'
+    new_task.id = this.new_task_id
+    new_task.description = 'Test task'
+    new_task.state = 0
+    new_task.user_id = this.id
+    this.taskService.add_task(new_task)
   }
 }

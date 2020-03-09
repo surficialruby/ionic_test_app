@@ -9,16 +9,27 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
-  <ion-list>
-    <ion-reorder-group disable='false'></ion-reorder-group>
-    <ion-list-header>
-      In progress
-    </ion-list-header>
-    <ion-item>
-    
-    </ion-item>
+<ion-content fullscreen> 
+  <ion-list-header>
+    In progress
+  </ion-list-header>
+  <ion-list *ngFor="let task of tasks">
+      <ion-item [routerLink]="'/details/'+task.id" routerDirection="forward">
+        <ion-icon slot="start"></ion-icon>
+           {{task.title}} 
+      </ion-item>
   </ion-list>
+  <ion-list-header>
+    To be done
+  </ion-list-header>
+  <ion-list *ngFor="let task of tasks">
+    <ion-item [routerLink]="'/details/'+task.id" routerDirection="forward">
+      <ion-icon slot="start"></ion-icon>
+         {{task.title}} 
+    </ion-item>
+</ion-list>
   <ion-button (click)="presentPrompt()"></ion-button>
-  <ion-button (click)="get()"></ion-button>
+  <ion-button (click)="get_user()"></ion-button>
+  <ion-button (click)="get_tasks()"></ion-button>
+  <ion-button (click)="add_task()"></ion-button>
 </ion-content>

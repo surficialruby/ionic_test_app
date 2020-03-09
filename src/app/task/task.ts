@@ -4,5 +4,7 @@ export class Task {
     id : number
     description : string
     state : number
+    user_id : number
+
     constructor() { }
   }

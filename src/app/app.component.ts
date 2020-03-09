@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AlertController } from '@ionic/angular';
 import { UserService } from 'src/app/user.service'
+import { User } from './user/user';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,9 @@ import { UserService } from 'src/app/user.service'
 })
 
 export class AppComponent {
+  users : Array<User>
   navigate : any
+
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -72,16 +75,18 @@ export class AppComponent {
   }
 
   async presentPrompt() {
-    let users_arr = this.userService.get_users()
+    await this.userService.get_users().then(val => {
+      this.users = val
+    })
     const alert = await this.alertController.create({
       header: 'Create new user',
-      inputs: this.create_inputs(users_arr),
+      inputs: this.create_inputs(this.users),
       buttons: [
         {
           text: 'Select',
           handler: data => {
             console.log(data-1)
-            this.userService.add_curr_user(users_arr[data-1])
+            this.userService.add_curr_user(this.users[data-1])
           }
         }
       ]
