@@ -6,6 +6,9 @@
     <ion-title>
       Home
     </ion-title>
+    <span slot="end">
+      <ion-button (click)="add_task_prompt()" >Add task</ion-button>
+    </span>
   </ion-toolbar>
 </ion-header>
 
@@ -13,12 +16,15 @@
   <ion-list-header>
     In progress
   </ion-list-header>
-  <ion-list *ngFor="let task of tasks">
-      <ion-item [routerLink]="'/details/'+task.id" routerDirection="forward">
-        <ion-icon slot="start"></ion-icon>
-           {{task.title}} 
-      </ion-item>
-  </ion-list>
+  <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+    <ion-list *ngFor="let task of tasks">
+        <ion-item [routerLink]="'/details/'+task.id" routerDirection="forward">
+          <ion-icon slot="start"></ion-icon>
+            {{task.title}}   
+            <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
+    </ion-list>
+  </ion-reorder-group>
   <ion-list-header>
     To be done
   </ion-list-header>

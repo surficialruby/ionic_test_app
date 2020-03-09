@@ -5,6 +5,8 @@ import { Task } from '../task/task';
 import { Storage } from '@ionic/storage';
 import { AlertController } from '@ionic/angular';
 import { TaskService } from '../task.service';
+import { ViewChild } from '@angular/core';
+import { IonReorderGroup } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +19,8 @@ export class HomePage implements OnInit {
   tasks : Array<Task> = []
   id : number
   user : User
+
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup
 
   constructor(
     private userService: UserService,
@@ -33,6 +37,16 @@ export class HomePage implements OnInit {
     } else {
       this.get_tasks()
     }
+  }
+
+  doReorder(ev: any) {
+    this.tasks = ev.detail.complete(this.tasks)
+    this.taskService.update_tasks(this.tasks)
+    console.log(this.tasks)
+  }
+
+  toggleReorderGroup() {
+    this.reorderGroup.disabled = !this.reorderGroup.disabled
   }
 
   private async get_user() {
@@ -107,15 +121,41 @@ export class HomePage implements OnInit {
     })
   }
 
-  async add_task() {
+  async add_task(title,desciption) {
     this.get_last_task_id()
     await this.get_user_id()
     let new_task = new Task()
-    new_task.title = 'Test task'
+    new_task.title = title
     new_task.id = this.new_task_id
-    new_task.description = 'Test task'
+    new_task.description = desciption
     new_task.state = 0
     new_task.user_id = this.id
     this.taskService.add_task(new_task)
+  }
+
+  async add_task_prompt() {
+    const alert = await this.alertController.create({
+      header: 'Add new task',
+      inputs: [
+        {
+          name: 'title',
+          placeholder: 'Title'
+        },
+        {
+          name: 'desciption',
+          placeholder: 'Description'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Select',
+          handler: data => {
+            console.log(data)
+            this.add_task(data.title,data.desciption)
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

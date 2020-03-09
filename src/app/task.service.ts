@@ -38,6 +38,11 @@ export class TaskService {
     this.storage.set('tasks',JSON.stringify(this.tasks))
   }
 
+  public update_tasks(tasks) {
+    this.tasks = tasks
+    this.storage.set('tasks',JSON.stringify(this.tasks))
+  }
+
   public edit_task() {
 
   }
