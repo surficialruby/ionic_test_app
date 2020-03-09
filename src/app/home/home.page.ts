@@ -34,7 +34,7 @@ export class HomePage implements OnInit {
   ngOnInit() {
     if(!this.userService.get_curr_user()){
       this.presentPrompt()
-    } else {
+    } else if(this.taskService.get_tasks()){
       this.get_tasks()
     }
   }
@@ -128,7 +128,7 @@ export class HomePage implements OnInit {
     new_task.title = title
     new_task.id = this.new_task_id
     new_task.description = desciption
-    new_task.state = 0
+    new_task.state = 0 //default in progress state
     new_task.user_id = this.id
     this.taskService.add_task(new_task)
   }

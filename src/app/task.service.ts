@@ -13,7 +13,8 @@ export class TaskService {
   
   private task_states : Array<String> = [
     'In progress',
-    'to be done'
+    'to be done',
+    'done'
   ]
   constructor(private storage : Storage) { }
 
@@ -52,6 +53,14 @@ export class TaskService {
    */
   public get_last_id() : number {
     return this.tasks.length
+  }
+
+  public get_element(id: number) {
+    for(const task of this.tasks) {
+      if(task.id == id) {
+        return task
+      }
+    }
   }
 
 }
