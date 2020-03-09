@@ -1,12 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../user.service'
 import { User } from '../user/user';
 import { Task } from '../task/task';
 import { Storage } from '@ionic/storage';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonReorderGroup } from '@ionic/angular';
 import { TaskService } from '../task.service';
-import { ViewChild } from '@angular/core';
-import { IonReorderGroup } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +17,8 @@ export class HomePage implements OnInit {
   tasks : Array<Task> = []
   id : number
   user : User
+  ip: Array<Task> = []
+  tbd: Array<Task> = []
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup
 
@@ -32,7 +32,7 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    if(!this.userService.get_curr_user()){
+    if(!this.get_user()){
       this.presentPrompt()
     } else if(this.taskService.get_tasks()){
       this.get_tasks()
@@ -118,7 +118,21 @@ export class HomePage implements OnInit {
     console.log(this.taskService.get_tasks())
     this.taskService.get_tasks().then(val => {
       this.tasks = val
+      for(const task of val) {
+        if(task.state == 0 && task.user_id == this.user.id){
+          this.ip.push(task)
+        } else if(task.state == 1 && task.user_id == this.user.id) {
+          this.tbd.push(task)
+        }
+      }
     })
+    for(const task of this.tasks) {
+      if(task.state == 0){
+        this.ip.push(task)
+      } else if(task.state == 1) {
+        this.tbd.push(task)
+      }
+    }
   }
 
   async add_task(title,desciption) {
