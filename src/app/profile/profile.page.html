@@ -10,5 +10,14 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-content>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Username: {{name}}</ion-card-title>
+        <ion-card-title>Id: {{id}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-item (click)="del_user()">delete</ion-item>
+    <ion-item (click)="edit_user_prompt()">Edit</ion-item>
+  </ion-content>
 </ion-content>

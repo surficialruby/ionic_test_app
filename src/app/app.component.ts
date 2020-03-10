@@ -7,6 +7,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AlertController } from '@ionic/angular';
 import { UserService } from 'src/app/user.service'
 import { User } from './user/user';
+import { HomePage } from './home/home.page';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,9 @@ import { User } from './user/user';
 export class AppComponent {
   users : Array<User>
   navigate : any
-
+  new_id : number
+  user: User
+  
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -27,6 +30,9 @@ export class AppComponent {
   ) {
     this.sideMenu();
     this.initializeApp();
+    if(!this.get_user()){
+      this.presentPrompt()
+    }
   }
 
   initializeApp() {
@@ -50,12 +56,15 @@ export class AppComponent {
       {
         title : "Profile",
         url   : "/profile"
-      },
-      {
-        title : "Settings",
-        url   : "/settings"
-      },
+      }
     ]
+  }
+
+  private async get_user() {
+    await this.userService.get_curr_user().then(val => {
+      this.user = val
+    })
+    return this.user
   }
 
   private create_inputs(users_arr) {
@@ -79,13 +88,12 @@ export class AppComponent {
       this.users = val
     })
     const alert = await this.alertController.create({
-      header: 'Create new user',
+      header: 'Select user',
       inputs: this.create_inputs(this.users),
       buttons: [
         {
           text: 'Select',
           handler: data => {
-            console.log(data-1)
             this.userService.add_curr_user(this.users[data-1])
           }
         }
@@ -93,4 +101,43 @@ export class AppComponent {
     });
     alert.present();
   }
+
+  private get_last_id() {
+    this.new_id = this.userService.get_last_id() + 1
+  }
+
+  add(name:string) {
+    this.get_last_id()
+    const new_user = new User()
+    new_user.name = name
+    new_user.id = this.new_id
+    this.userService.add_user(new_user)
+    this.userService.add_curr_user(new_user)
+  }
+
+  async add_user_prompt() {
+    const alert = await this.alertController.create({
+      header: 'Create new user',
+      inputs: [
+        {
+          name: 'username',
+          placeholder: 'Username'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Create',
+          handler: data => {
+            if(data.username.length > 1) {
+              this.add(data.username)
+            } else {
+              return false
+            }
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
 }

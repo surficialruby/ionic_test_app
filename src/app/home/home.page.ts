@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../user.service'
 import { User } from '../user/user';
 import { Task } from '../task/task';
-import { Storage } from '@ionic/storage';
 import { AlertController, IonReorderGroup } from '@ionic/angular';
 import { TaskService } from '../task.service';
 
@@ -12,29 +11,29 @@ import { TaskService } from '../task.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  new_id : number
+
   new_task_id : number
   tasks : Array<Task> = []
   id : number
   user : User
-  ip: Array<Task> = []
-  tbd: Array<Task> = []
 
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup
+  @ViewChild(IonReorderGroup, {static: true}) reorderGroup: IonReorderGroup
 
   constructor(
     private userService: UserService,
-    private storage: Storage,
     public alertController: AlertController,
     private taskService: TaskService
   ) {
-
+    
   }
 
   ngOnInit() {
-    if(!this.get_user()){
-      this.presentPrompt()
-    } else if(this.taskService.get_tasks()){
+    if(this.get_user()){
+      setInterval(() => {
+        this.check_user()
+      }, 100)
+    }
+    if(this.taskService.get_tasks()){
       this.get_tasks()
     }
   }
@@ -42,7 +41,6 @@ export class HomePage implements OnInit {
   doReorder(ev: any) {
     this.tasks = ev.detail.complete(this.tasks)
     this.taskService.update_tasks(this.tasks)
-    console.log(this.tasks)
   }
 
   toggleReorderGroup() {
@@ -57,82 +55,42 @@ export class HomePage implements OnInit {
     return this.user
   }
 
+  private async check_user() {
+    await this.userService.get_curr_user().then(val => {
+      if(this.user.id != val.id) {
+        this.get_user()
+        this.get_tasks()
+      }
+    })
+    if(this.taskService.check_task_update()) {
+      this.get_tasks()
+    }
+  }
+
   private async get_user_id() {
     await this.userService.get_curr_user_id().then(val => {
       this.id = val
-      console.log(this.id)
     })
-  }
-
-  /**
-   * Add new user
-   */
-  add(name:string) {
-    this.get_last_id()
-    console.log(this.new_id)
-    const new_user = new User()
-    new_user.name = name
-    new_user.id = this.new_id
-    this.userService.add_user(new_user)
-    this.userService.add_curr_user(new_user)
   }
 
   get() {
     console.log(this.userService.get_users())
   }
 
-  private get_last_id() {
-    this.new_id = this.userService.get_last_id() + 1
-  }
-
   private get_last_task_id() {
     this.new_task_id = this.taskService.get_last_id() + 1
   }
-  
-  async presentPrompt() {
-    const alert = await this.alertController.create({
-      header: 'Create new user',
-      inputs: [
-        {
-          name: 'username',
-          placeholder: 'Username'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Create',
-          handler: data => {
-            if(data.username.length > 1) {
-              this.add(data.username)
-            } else {
-              return false
-            }
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
 
   get_tasks() {
-    console.log(this.taskService.get_tasks())
     this.taskService.get_tasks().then(val => {
-      this.tasks = val
-      for(const task of val) {
-        if(task.state == 0 && task.user_id == this.user.id){
-          this.ip.push(task)
-        } else if(task.state == 1 && task.user_id == this.user.id) {
-          this.tbd.push(task)
+      this.tasks = []
+      for(let i=0, len = val.length;i<len;i++) {
+        if(val[i].user_id == this.user.id){
+          this.tasks.push(val[i])
         }
       }
     })
-    for(const task of this.tasks) {
-      if(task.state == 0){
-        this.ip.push(task)
-      } else if(task.state == 1) {
-        this.tbd.push(task)
-      }
-    }
+    
   }
 
   async add_task(title,desciption) {
@@ -164,7 +122,6 @@ export class HomePage implements OnInit {
         {
           text: 'Select',
           handler: data => {
-            console.log(data)
             this.add_task(data.title,data.desciption)
           }
         }
@@ -172,4 +129,5 @@ export class HomePage implements OnInit {
     });
     alert.present();
   }
+  
 }

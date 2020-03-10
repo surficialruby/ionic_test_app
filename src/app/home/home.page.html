@@ -12,33 +12,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="user" fullscreen> 
-  <ion-list-header>
-    In progress
-  </ion-list-header>
+<ion-content fullscreen> 
     <ion-list>
       <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
-        <ion-item *ngFor="let task of ip" [routerLink]="'/details/'+task.id" routerDirection="forward">
-          <ion-icon slot="start"></ion-icon>
+        <ion-item *ngFor="let task of tasks" [routerLink]="'/details/'+task.id" routerDirection="forward">
             {{task.title}}   
             <ion-reorder slot="end"></ion-reorder>
         </ion-item>
       </ion-reorder-group>
     </ion-list>
-  <ion-list-header>
-    To be done
-  </ion-list-header>
-    <ion-list>
-      <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
-        <ion-item *ngFor="let task of tbd" [routerLink]="'/details/'+task.id" routerDirection="forward">
-          <ion-icon slot="start"></ion-icon>
-            {{task.title}}   
-            <ion-reorder slot="end"></ion-reorder>
-        </ion-item>
-      </ion-reorder-group>
-    </ion-list>
-  <ion-button (click)="presentPrompt()"></ion-button>
-  <ion-button (click)="get_user()"></ion-button>
-  <ion-button (click)="get_tasks()"></ion-button>
-  <ion-button (click)="add_task()"></ion-button>
+  <ion-button (click)="get_user()">[test]user</ion-button>
+  <ion-button (click)="get()">[test]users</ion-button>
+  <ion-button (click)="get_tasks()">[test]tasks</ion-button>
 </ion-content>

@@ -12,7 +12,9 @@ export class UserService {
   private user : User
   private user_id : number
 
-  constructor(private storage:Storage) { }
+  constructor(private storage:Storage) {
+
+  }
 
   public async get_curr_user() {
     await this.storage.get('cur_user').then(val => {
@@ -36,7 +38,7 @@ export class UserService {
   public async get_users() {
     await this.storage.get('users').then(val => {
       let users = JSON.parse(val)
-      if(users != null) {
+      if(users.length != 0) {
         this.users = users
       }
     })
@@ -61,6 +63,21 @@ export class UserService {
    */
   public get_last_id() : number {
     return this.users.length
+  }
+
+  public async edit_user(user) {
+    this.add_curr_user(user)
+    await this.get_users()
+    for(let i = 0, len = this.users.length;i<len;i++) {
+      if(this.users[i].id == user.id){
+        this.users[i] = user
+        this.storage.set('users',JSON.stringify(this.users))
+      }
+    }
+  }
+
+  public del_user(id) {
+
   }
   
 }

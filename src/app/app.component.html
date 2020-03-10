@@ -15,9 +15,13 @@
         </ion-menu-toggle>
         </ion-list>
         <ion-list>
-          <ion-item>
+          <ion-item (click)="presentPrompt()">
             <ion-icon slot="start"></ion-icon>
-            <ion-button (click)="presentPrompt()">Select user</ion-button>
+            Select user
+          </ion-item>
+          <ion-item (click)="add_user_prompt()">
+            <ion-icon slot="start"></ion-icon>
+            Add user
           </ion-item>
         </ion-list>
       </ion-content>
