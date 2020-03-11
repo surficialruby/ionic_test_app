@@ -56,15 +56,21 @@ export class HomePage implements OnInit {
   }
 
   private async check_user() {
+    let cur_user: User = new User
     await this.userService.get_curr_user().then(val => {
-      if(this.user.id != val.id) {
-        this.get_user()
-        this.get_tasks()
-      }
+      cur_user = val
     })
+    if(cur_user) {
+      await this.userService.get_curr_user().then(val => {
+        if(!this.user || this.user.id != val.id) {
+          this.get_user()
+        }
+      })
+    }
     if(this.taskService.check_task_update()) {
       this.get_tasks()
     }
+    
   }
 
   private async get_user_id() {
@@ -82,14 +88,18 @@ export class HomePage implements OnInit {
   }
 
   get_tasks() {
-    this.taskService.get_tasks().then(val => {
-      this.tasks = []
-      for(let i=0, len = val.length;i<len;i++) {
-        if(val[i].user_id == this.user.id){
-          this.tasks.push(val[i])
+    if(this.taskService.get_tasks()) {
+      this.taskService.get_tasks().then(val => {
+        this.tasks = []
+        for(let i=0, len = val.length;i<len;i++) {
+          if(this.user) {
+            if(val[i].user_id == this.user.id){
+              this.tasks.push(val[i])
+            }
+          }
         }
-      }
-    })
+      })
+    }
     
   }
 
@@ -122,7 +132,11 @@ export class HomePage implements OnInit {
         {
           text: 'Select',
           handler: data => {
-            this.add_task(data.title,data.desciption)
+            if(this.user) {
+              this.add_task(data.title,data.desciption)
+            }else {
+              return false
+            }
           }
         }
       ]

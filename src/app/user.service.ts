@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { User } from 'src/app/user/user'
 import { Storage } from '@ionic/storage';
+import { TaskService } from 'src/app/task.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ export class UserService {
   private user : User
   private user_id : number
 
-  constructor(private storage:Storage) {
+  constructor(
+    private storage: Storage,
+    private taskservice: TaskService
+  ) {
 
   }
 
@@ -76,8 +80,18 @@ export class UserService {
     }
   }
 
-  public del_user(id) {
-
+  public async del_user(id) {
+    await this.get_users()
+    for(let i = 0, len = this.users.length;i<len;i++) {
+      if(this.users[i].id == id){
+        console.log(this.users[i])
+        this.taskservice.del_user_tasks(id)
+        this.users.splice(i,1)
+        this.storage.set('users',JSON.stringify(this.users))
+        this.storage.remove('cur_user')
+        this.user = undefined
+      }
+    }
   }
   
 }

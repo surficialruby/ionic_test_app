@@ -70,6 +70,17 @@ export class TaskService {
     this.task_updated = true
   }
 
+  public async del_user_tasks(id) {
+    await this.get_tasks()
+    for(let i = 0, len = this.tasks.length;i<len;i++) {
+      if(this.tasks[i].user_id == id){
+        this.tasks.splice(i,1)
+        this.update_tasks()
+      }
+    }
+    this.task_updated = true
+  }
+
   /**
    * get array length
    */

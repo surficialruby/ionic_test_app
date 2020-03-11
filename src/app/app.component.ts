@@ -30,9 +30,7 @@ export class AppComponent {
   ) {
     this.sideMenu();
     this.initializeApp();
-    if(!this.get_user()){
-      this.presentPrompt()
-    }
+    this.test_users()
   }
 
   initializeApp() {
@@ -58,6 +56,13 @@ export class AppComponent {
         url   : "/profile"
       }
     ]
+  }
+
+  private async test_users() {
+    await this.get_user()
+    if(this.user == null){
+      this.add_user_prompt()
+    }
   }
 
   private async get_user() {
@@ -135,7 +140,8 @@ export class AppComponent {
             }
           }
         }
-      ]
+      ],
+      backdropDismiss: false
     });
     alert.present();
   }

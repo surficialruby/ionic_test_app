@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../user/user'
 import { UserService } from '../user.service'
 import { AlertController } from '@ionic/angular'
+import { Location } from '@angular/common'
 
 @Component({
   selector: 'app-profile',
@@ -13,6 +14,7 @@ export class ProfilePage implements OnInit {
   id: number
 
   constructor(
+    private location: Location,
     private userService: UserService,
     public alertController: AlertController
   ) {
@@ -24,9 +26,16 @@ export class ProfilePage implements OnInit {
 
   get_user(){
     this.userService.get_curr_user().then(val => {
-      this.name = val.name
-      this.id = val.id
+      if(val){
+        this.name = val.name
+        this.id = val.id
+      }
     })
+  }
+
+  del_user() {
+    this.userService.del_user(this.id)
+    this.location.back()
   }
 
   async edit_user_prompt() {
