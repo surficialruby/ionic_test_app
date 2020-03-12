@@ -61,6 +61,7 @@ export class TaskService {
   }
   
   public del_task(id) {
+    this.get_tasks()
     for(let i = 0, len = this.tasks.length;i<len;i++) {
       if(this.tasks[i].id == id){
         this.tasks.splice(i,1)
